@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="nn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karbonkjemi & Karbonkrinsløpet – Interaktiv Læringsapp</title>
+    <style>
+        :root {
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-surface-alt: #0b1120;
+            --bg-card-hover: #26354d;
+            --border: #334155;
+            --border-light: #475569;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            --primary: #38bdf8;
+            --primary-dark: #0284c7;
+            --emerald: #10b981;
+            --emerald-dark: #059669;
+            --amber: #f59e0b;
+            --rose: #f43f5e;
+            --indigo: #818cf8;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-lg: 0 12px 30px -5px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.55;
+        }
+
+        /* Toppbar og navigasjon */
+        header {
+            background: rgba(30, 41, 59, 0.95);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            backdrop-filter: blur(8px);
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .brand-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0284c7, #10b981);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.45rem;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+            flex-shrink: 0;
+        }
+
+        .brand h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .brand p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Hovudfaner */
+        .main-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            background: var(--bg-surface-alt);
+            padding: 0.35rem;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: var(--primary-dark);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+        }
+
+        /* Hovudinnhald */
+        main {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem;
+            flex: 1;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Kort og felles komponentar */
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.35rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn {
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0.65rem 1.1rem;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+        .btn-primary:hover:not(:disabled) { background: #0369a1; }
+
+        .btn-emerald {
+            background: var(--emerald-dark);
+            color: #fff;
+        }
+        .btn-emerald:hover:not(:disabled) { background: #047857; }
+
+        .btn-amber {
+            background: #d97706;
+            color: #fff;
+        }
+        .btn-amber:hover:not(:disabled) { background: #b45309; }
+
+        .btn-rose {
+            background: #e11d48;
+            color: #fff;
+        }
+        .btn-rose:hover:not(:disabled) { background: #be123c; }
+
+        .btn-ghost {
+            background: var(--bg-surface-alt);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover:not(:disabled) { background: var(--bg-card-hover); }
+
+        /* =========================================================
+           FANE 1: LABORATORIUM (CO2-FORSØKET)
+           ========================================================= */
+        .lab-stepper {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .lab-stepper { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .step-pill {
+            background: var(--bg-surface-alt);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0.65rem 0.85rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            transition: all 0.25s;
+        }
+
+        .step-pill.active {
+            border-color: var(--primary);
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .step-pill.done {
+            border-color: var(--emerald);
+            background: rgba(16, 185, 129, 0.12);
+            color: #6ee7b7;
+        }
+
+        .step-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--border);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-pill.active .step-circle { background: var(--primary-dark); }
+        .step-pill.done .step-circle { background: var(--emerald-dark); }
+
+        .lab-guide-bar {
+            background: rgba(2, 132, 199, 0.14);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 0.85rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-size: 0.92rem;
+        }
+
+        .lab-grid {
+            display: grid;
+            grid-template-columns: 290px 1fr;
+            gap: 1.25rem;
+            margin-top: 1.25rem;
+        }
+
+        @media (max-width: 900px) {
+            .lab-grid { grid-template-columns: 1fr; }
+        }
+
+        .btb-legend {
+            background: var(--bg-surface-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+        }
+
+        .btb-tubes-row {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 0.85rem;
+            gap: 0.5rem;
+        }
+
+        .btb-sample {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .sample-tube {
+            width: 22px;
+            height: 54px;
+            border: 2px solid var(--border-light);
+            border-top: none;
+            border-radius: 0 0 11px 11px;
+            margin-bottom: 0.4rem;
+        }
+
+        .formula-banner {
+            background: var(--bg-surface-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .formula-code {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--amber);
+            margin-top: 0.25rem;
+        }
+
+        .flasks-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 640px) {
+            .flasks-container { grid-template-columns: 1fr; }
+        }
+
+        .flask-box {
+            background: var(--bg-surface-alt);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.15rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.25s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .flask-box:hover {
+            border-color: var(--primary);
+        }
+
+        .flask-box.target-glow {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
+
+        .flask-top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-cold {
+            background: rgba(37, 99, 235, 0.25);
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .badge-warm {
+            background: rgba(225, 29, 72, 0.25);
+            color: #fda4af;
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .btb-pill {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .svg-stage {
+            position: relative;
+            width: 190px;
+            height: 225px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0.25rem 0;
+        }
+
+        .falling-drop {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 14px;
+            background: #3b82f6;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes dropAnim {
+            0% { top: 10px; opacity: 1; transform: translateX(-50%) scale(1); }
+            85% { top: 175px; opacity: 1; transform: translateX(-50%) scale(0.9); }
+            100% { top: 186px; opacity: 0; transform: translateX(-50%) scale(1.4); }
+        }
+
+        .drop-active {
+            animation: dropAnim 0.42s ease-in forwards;
+        }
+
+        .water-stream {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 0;
+            background: rgba(147, 197, 253, 0.8);
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 8;
+            transition: height 0.25s;
+        }
+
+        @keyframes bubbleRise {
+            0% { transform: translateY(0) scale(0.75); opacity: 0.9; }
+            100% { transform: translateY(-60px) scale(1.15); opacity: 0; }
+        }
+
+        .bubble-dot {
+            animation: bubbleRise 0.85s ease-out infinite;
+        }
+
+        .readout-panel {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0.7rem 0.9rem;
+            font-size: 0.82rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            margin-top: 0.4rem;
+        }
+
+        .readout-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .readout-row span:first-child { color: var(--text-muted); }
+        .readout-row span:last-child { font-weight: 700; color: var(--text-main); }
+
+        .conclusion-banner {
+            margin-top: 1.25rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid var(--emerald);
+            border-radius: var(--radius-lg);
+            padding: 1.35rem;
+            display: none;
+        }
+
+        .conclusion-banner.show {
+            display: block;
+            animation: fadeIn 0.35s ease-out;
+        }
+
+        .conclusion-cols {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 800px) {
+            .conclusion-cols { grid-template-columns: 1fr; }
+        }
+
+        .conclusion-item {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            font-size: 0.86rem;
+        }
+
+        .conclusion-item h4 {
+            color: #6ee7b7;
+            margin-bottom: 0.4rem;
+            font-size: 0.94rem;
+        }
+
+        /* =========================================================
+           FANE 2: ØV PÅ FAGOMGREP & FORKLARINGAR
+           ========================================================= */
+        .study-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .sub-modes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .sub-btn {
+            background: var(--bg-surface-alt);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.55rem 0.95rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sub-btn:hover { color: var(--text-main); border-color: var(--border-light); }
+        .sub-btn.active {
+            background: var(--indigo);
+            color: #0f172a;
+            border-color: var(--indigo);
+        }
+
+        .progress-pill {
+            background: var(--bg-surface-alt);
+            border: 1px solid var(--border);
+            padding: 0.5rem 0.95rem;
+            border-radius: 999px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: #6ee7b7;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* 3D Flashcard */
+        .flashcard-area {
+            max-width: 680px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .flashcard-scene {
+            width: 100%;
+            height: 310px;
+            perspective: 1100px;
+            cursor: pointer;
+        }
+
+        .flashcard-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flashcard-inner.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 2px solid var(--border-light);
+            border-radius: 22px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(145deg, #1e293b, #172554);
+            border-color: var(--primary);
+        }
+
+        .cat-tag {
+            background: rgba(129, 140, 248, 0.2);
+            color: #c7d2fe;
+            border: 1px solid rgba(129, 140, 248, 0.35);
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .fc-term {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .fc-def {
+            font-size: 1.08rem;
+            color: #f1f5f9;
+            line-height: 1.6;
+            max-width: 560px;
+        }
+
+        .fc-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .fc-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        /* Quiz */
+        .quiz-box {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .quiz-question {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 0.85rem 0 1.25rem;
+            color: #ffffff;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .quiz-opt {
+            background: var(--bg-surface-alt);
+            border: 1.5px solid var(--border);
+            color: var(--text-main);
+            padding: 0.9rem 1.1rem;
+            border-radius: var(--radius-md);
+            text-align: left;
+            font-size: 0.94rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .quiz-opt:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .quiz-opt.correct {
+            border-color: var(--emerald);
+            background: rgba(16, 185, 129, 0.18);
+            color: #ecfdf5;
+        }
+
+        .quiz-opt.wrong {
+            border-color: var(--rose);
+            background: rgba(244, 63, 94, 0.18);
+            color: #fff1f2;
+        }
+
+        .opt-letter {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.82rem;
+            flex-shrink: 0;
+        }
+
+        /* Oversiktsliste */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 220px;
+            background: var(--bg-surface-alt);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.65rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .cat-select {
+            background: var(--bg-surface-alt);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.65rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+
+        .glossary-card {
+            background: var(--bg-surface-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.75rem;
+            transition: border-color 0.2s;
+        }
+
+        .glossary-card.mastered {
+            border-color: rgba(16, 185, 129, 0.55);
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.08), var(--bg-surface-alt));
+        }
+
+        .glossary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .glossary-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* =========================================================
+           FANE 3: FUN FACTS FRÅ KARBONKJEMIEN
+           ========================================================= */
+        .facts-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .facts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            gap: 1.15rem;
+        }
+
+        .fact-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.35rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .fact-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--amber);
+        }
+
+        .fact-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fact-icon {
+            font-size: 1.85rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(245, 158, 11, 0.14);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fact-topic {
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--amber);
+            background: rgba(245, 158, 11, 0.12);
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+        }
+
+        .fact-title {
+            font-size: 1.08rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .fact-body {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .fact-exam-tip {
+            margin-top: auto;
+            padding-top: 0.65rem;
+            border-top: 1px dashed var(--border);
+            font-size: 0.8rem;
+            color: #6ee7b7;
+            font-weight: 500;
+        }
+
+        /* Meldingsboks (Toast) */
+        .toast {
+            position: fixed;
+            bottom: 22px;
+            right: 22px;
+            background: #0284c7;
+            color: #ffffff;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+            opacity: 0;
+            transform: translateY(15px);
+            pointer-events: none;
+            transition: all 0.25s;
+            z-index: 100;
+            max-width: 340px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.25rem;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-inner">
+            <div class="brand">
+                <div class="brand-logo">⚗️</div>
+                <div>
+                    <h1>Karbonkjemi & Karbonkrinsløpet</h1>
+                    <p>Interaktiv lab, øving på 18 fagomgrep og fun facts til prøven</p>
+                </div>
+            </div>
+
+            <nav class="main-tabs" aria-label="Hovudmeny">
+                <button class="tab-btn active" id="tab-btn-lab" onclick="switchMainTab('lab')">
+                    🧪 Laboratorium: CO₂-forsøket
+                </button>
+                <button class="tab-btn" id="tab-btn-study" onclick="switchMainTab('study')">
+                    🧠 Øv på fagomgrep (18)
+                </button>
+                <button class="tab-btn" id="tab-btn-facts" onclick="switchMainTab('facts')">
+                    💡 Fun facts
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- =========================================================
+             FANE 1: LABORATORIUM (CO2-FORSØKET)
+             ========================================================= -->
+        <section id="panel-lab" class="tab-panel active">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem;">
+                    <div>
+                        <h2 style="font-size:1.15rem; font-weight:700;">Forsøk: Karbondioksid i kaldt og varmt vatn</h2>
+                        <p style="font-size:0.84rem; color:var(--text-muted);">Utfør forsøket steg for steg ved å klikke på kolbene eller handlingsknappane under dei.</p>
+                    </div>
+                    <button class="btn btn-ghost" onclick="resetLab()">🔄 Nullstill forsøk</button>
+                </div>
+
+                <!-- Steg-indikator -->
+                <div class="lab-stepper">
+                    <div id="step-1" class="step-pill active">
+                        <span class="step-circle">1</span>
+                        <span>Dryp 8 dråpar BTB</span>
+                    </div>
+                    <div id="step-2" class="step-pill">
+                        <span class="step-circle">2</span>
+                        <span>Hell 40 ml vatn i kvar</span>
+                    </div>
+                    <div id="step-3" class="step-pill">
+                        <span class="step-circle">3</span>
+                        <span>Blås CO₂ med sugerør</span>
+                    </div>
+                    <div id="step-4" class="step-pill">
+                        <span class="step-circle">4</span>
+                        <span>Samanlikn og konkluder</span>
+                    </div>
+                </div>
+
+                <div class="lab-guide-bar">
+                    <div id="lab-instruction">
+                        <strong>Steg 1:</strong> Klikk på kvar kolbe (eller knappen under) for å dryppe <strong>8 dråpar BTB</strong> ned i botnen av begge erlenmeyerkolbene.
+                    </div>
+                </div>
+
+                <div class="lab-grid">
+                    <!-- Venstre kolonne: Teori, BTB-skala og reaksjonslikning -->
+                    <div style="display:flex; flex-direction:column; justify-content:space-between;">
+                        <div class="btb-legend">
+                            <div style="font-weight:700; font-size:0.9rem; margin-bottom:0.35rem;">🎨 BTB (bromtymolblått)</div>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">
+                                BTB er ein pH-indikator som skiftar farge etter kor sur eller basisk væska er:
+                            </p>
+                            <div class="btb-tubes-row">
+                                <div class="btb-sample">
+                                    <div class="sample-tube" style="background:#facc15;"></div>
+                                    <strong style="color:#fde047;">Gul</strong>
+                                    <span>pH under 6</span>
+                                </div>
+                                <div class="btb-sample">
+                                    <div class="sample-tube" style="background:#22c55e;"></div>
+                                    <strong style="color:#86efac;">Grøn</strong>
+                                    <span>pH 6 – 7,6</span>
+                                </div>
+                                <div class="btb-sample">
+                                    <div class="sample-tube" style="background:#2563eb;"></div>
+                                    <strong style="color:#93c5fd;">Blå</strong>
+                                    <span>pH over 7,6</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="formula-banner">
+                            <div style="font-size:0.78rem; color:var(--text-muted); font-weight:600;">Kjemisk reaksjon i vatnet:</div>
+                            <div class="formula-code">CO₂ + H₂O ⇌ H₂CO₃</div>
+                            <div style="font-size:0.76rem; color:var(--text-muted); margin-top:0.25rem;">
+                                Karbonsyre (H₂CO₃) spaltast til <strong>H⁺</strong> og HCO₃⁻, som gjer vatnet surare!
+                            </div>
+                        </div>
+
+                        <div style="background:var(--bg-surface-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:0.9rem; margin-top:1rem; font-size:0.8rem; color:var(--text-muted);">
+                            <strong style="color:var(--text-main); display:block; margin-bottom:0.25rem;">💡 Tips til prøven:</strong>
+                            Kaldt vatn klarer å løyse meir CO₂-gass enn varmt vatn. Difor blir pH lågare og fargen meir gul i den kalde kolba!
+                        </div>
+                    </div>
+
+                    <!-- Høgre kolonne: De to erlenmeyerkolbene -->
+                    <div class="flasks-container">
+                        <!-- KOLBE 1: KALDT VATN -->
+                        <div id="box-cold" class="flask-box target-glow" onclick="stepFlask('cold')">
+                            <div class="flask-top-bar">
+                                <span class="badge-cold">❄️ Kaldt vatn (ca. 4 °C)</span>
+                                <span id="cold-drops-txt" class="btb-pill">BTB: 0 / 8</span>
+                            </div>
+
+                            <div class="svg-stage">
+                                <div id="drop-cold" class="falling-drop"></div>
+                                <div id="stream-cold" class="water-stream"></div>
+
+                                <svg width="180" height="220" viewBox="0 0 180 220">
+                                    <defs>
+                                        <clipPath id="clip-cold">
+                                            <path d="M72 45 L72 82 L30 182 C26 192 33 202 44 202 L136 202 C147 202 154 192 150 182 L108 82 L108 45 Z"/>
+                                        </clipPath>
+                                    </defs>
+
+                                    <g clip-path="url(#clip-cold)">
+                                        <rect id="liq-cold" x="20" y="202" width="140" height="0" fill="#2563eb" style="transition: y 0.55s ease, height 0.55s ease, fill 0.35s ease;"/>
+                                        <!-- Isbitar -->
+                                        <g id="ice-cold" opacity="0" style="transition: opacity 0.4s;">
+                                            <rect x="64" y="136" width="18" height="15" rx="3" fill="#ffffff" fill-opacity="0.88" stroke="#93c5fd" stroke-width="1.5" transform="rotate(-14 64 136)"/>
+                                            <rect x="92" y="135" width="18" height="15" rx="3" fill="#ffffff" fill-opacity="0.88" stroke="#93c5fd" stroke-width="1.5" transform="rotate(12 92 135)"/>
+                                            <rect x="78" y="143" width="16" height="14" rx="3" fill="#ffffff" fill-opacity="0.82" stroke="#93c5fd" stroke-width="1.5" transform="rotate(4 78 143)"/>
+                                        </g>
+                                        <!-- CO2-bobler -->
+                                        <g id="bub-cold" style="display:none;">
+                                            <circle class="bubble-dot" cx="83" cy="192" r="3" fill="#ffffff" style="animation-delay:0s;"/>
+                                            <circle class="bubble-dot" cx="95" cy="194" r="2.5" fill="#ffffff" style="animation-delay:0.25s;"/>
+                                            <circle class="bubble-dot" cx="76" cy="190" r="3.5" fill="#ffffff" style="animation-delay:0.5s;"/>
+                                            <circle class="bubble-dot" cx="101" cy="191" r="2.8" fill="#ffffff" style="animation-delay:0.7s;"/>
+                                        </g>
+                                    </g>
+
+                                    <!-- Sugerør -->
+                                    <g id="straw-cold" opacity="0" style="transition: opacity 0.25s;">
+                                        <path d="M134 10 L96 42 L86 190" stroke="#f59e0b" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M134 10 L96 42 L86 190" stroke="#fef3c7" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>
+                                    </g>
+
+                                    <!-- Kolbekontur -->
+                                    <path d="M68 42 H112 M72 42 L72 82 L30 182 C26 192 33 202 44 202 L136 202 C147 202 154 192 150 182 L108 82 L108 42"
+                                          fill="none" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <line x1="66" y1="138" x2="78" y2="138" stroke="#94a3b8" stroke-width="1.5"/>
+                                    <text x="82" y="141" font-size="9" fill="#94a3b8">40 ml</text>
+                                </svg>
+                            </div>
+
+                            <div class="readout-panel">
+                                <div class="readout-row">
+                                    <span>Farge (BTB):</span>
+                                    <span id="cold-color-txt">Tom kolbe</span>
+                                </div>
+                                <div class="readout-row">
+                                    <span>Målt pH-verdi:</span>
+                                    <span id="cold-ph-txt">–</span>
+                                </div>
+                                <div class="readout-row">
+                                    <span>Blåsetid (CO₂):</span>
+                                    <span id="cold-sec-txt">0,0 sek</span>
+                                </div>
+                            </div>
+
+                            <button id="btn-cold" class="btn btn-primary" style="width:100%; margin-top:0.75rem;" onclick="event.stopPropagation(); stepFlask('cold')">
+                                💧 Dryp 8 dråpar BTB
+                            </button>
+                        </div>
+
+                        <!-- KOLBE 2: VARMT VATN -->
+                        <div id="box-warm" class="flask-box target-glow" onclick="stepFlask('warm')">
+                            <div class="flask-top-bar">
+                                <span class="badge-warm">🔥 Varmt vatn (ca. 45 °C)</span>
+                                <span id="warm-drops-txt" class="btb-pill">BTB: 0 / 8</span>
+                            </div>
+
+                            <div class="svg-stage">
+                                <div id="drop-warm" class="falling-drop"></div>
+                                <div id="stream-warm" class="water-stream" style="background:rgba(253,164,175,0.8);"></div>
+
+                                <svg width="180" height="220" viewBox="0 0 180 220">
+                                    <defs>
+                                        <clipPath id="clip-warm">
+                                            <path d="M72 45 L72 82 L30 182 C26 192 33 202 44 202 L136 202 C147 202 154 192 150 182 L108 82 L108 45 Z"/>
+                                        </clipPath>
+                                    </defs>
+
+                                    <g clip-path="url(#clip-warm)">
+                                        <rect id="liq-warm" x="20" y="202" width="140" height="0" fill="#2563eb" style="transition: y 0.55s ease, height 0.55s ease, fill 0.35s ease;"/>
+                                        <!-- CO2-bobler -->
+                                        <g id="bub-warm" style="display:none;">
+                                            <circle class="bubble-dot" cx="84" cy="192" r="3" fill="#ffffff" style="animation-delay:0s;"/>
+                                            <circle class="bubble-dot" cx="95" cy="194" r="2.5" fill="#ffffff" style="animation-delay:0.25s;"/>
+                                            <circle class="bubble-dot" cx="77" cy="190" r="3.5" fill="#ffffff" style="animation-delay:0.5s;"/>
+                                        </g>
+                                    </g>
+
+                                    <!-- Damp -->
+                                    <g id="steam-warm" opacity="0" style="transition: opacity 0.4s;">
+                                        <path d="M82 32 Q78 22 83 14" stroke="#94a3b8" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                        <path d="M96 34 Q100 24 95 16" stroke="#94a3b8" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                    </g>
+
+                                    <!-- Sugerør -->
+                                    <g id="straw-warm" opacity="0" style="transition: opacity 0.25s;">
+                                        <path d="M134 10 L96 42 L86 190" stroke="#f59e0b" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M134 10 L96 42 L86 190" stroke="#fef3c7" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>
+                                    </g>
+
+                                    <!-- Kolbekontur -->
+                                    <path d="M68 42 H112 M72 42 L72 82 L30 182 C26 192 33 202 44 202 L136 202 C147 202 154 192 150 182 L108 82 L108 42"
+                                          fill="none" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <line x1="66" y1="138" x2="78" y2="138" stroke="#94a3b8" stroke-width="1.5"/>
+                                    <text x="82" y="141" font-size="9" fill="#94a3b8">40 ml</text>
+                                </svg>
+                            </div>
+
+                            <div class="readout-panel">
+                                <div class="readout-row">
+                                    <span>Farge (BTB):</span>
+                                    <span id="warm-color-txt">Tom kolbe</span>
+                                </div>
+                                <div class="readout-row">
+                                    <span>Målt pH-verdi:</span>
+                                    <span id="warm-ph-txt">–</span>
+                                </div>
+                                <div class="readout-row">
+                                    <span>Blåsetid (CO₂):</span>
+                                    <span id="warm-sec-txt">0,0 sek</span>
+                                </div>
+                            </div>
+
+                            <button id="btn-warm" class="btn btn-primary" style="width:100%; margin-top:0.75rem;" onclick="event.stopPropagation(); stepFlask('warm')">
+                                💧 Dryp 8 dråpar BTB
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Konklusjonsboks når forsøket er ferdig -->
+                <div id="lab-conclusion" class="conclusion-banner">
+                    <h3 style="font-size:1.08rem; color:#6ee7b7; font-weight:700;">✅ Forsøket er fullført! Oppsummering til prøven:</h3>
+                    <div class="conclusion-cols">
+                        <div class="conclusion-item">
+                            <h4>1. Kvifor skifta vatnet farge?</h4>
+                            <p>Når du bles CO₂ ned i vatnet, reagerte gassen med H₂O og danna <strong>karbonsyre (H₂CO₃)</strong>. Karbonsyra gir frå seg <strong>H⁺-ion</strong>, noko som senkar pH-verdien og får BTB til å skifte farge frå blått mot grønt og gult.</p>
+                        </div>
+                        <div class="conclusion-item">
+                            <h4>2. Kaldt vatn vs. varmt vatn</h4>
+                            <p>Gassar løyser seg <strong>mykje betre i kaldt vatn</strong> enn i varmt vatn. Difor tok det kalde vatnet opp meir CO₂, fekk lågare pH (ca. 5,5) og vart <strong>gult</strong>, medan det varme vatnet stoppa på <strong>grønt</strong> (pH ca. 6,5).</p>
+                        </div>
+                        <div class="conclusion-item">
+                            <h4>3. Samanheng med havforsuring</h4>
+                            <p>Når CO₂-innhaldet i atmosfæren aukar, tek havet opp meir CO₂ og blir surare (<strong>havforsuring</strong>). Kalde havområde tek opp ekstra mykje CO₂, noko som svekkjer kalkskala (CaCO₃) til marine dyr.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             FANE 2: ØV PÅ FAGOMGREP & FORKLARINGAR (18 OMGREP)
+             ========================================================= -->
+        <section id="panel-study" class="tab-panel">
+            <div class="card">
+                <div class="study-toolbar">
+                    <div class="sub-modes">
+                        <button class="sub-btn active" id="sub-btn-cards" onclick="switchStudyMode('cards')">🗂️ Vendekort (Flashcards)</button>
+                        <button class="sub-btn" id="sub-btn-quiz" onclick="switchStudyMode('quiz')">🎯 Quiz / Flerval</button>
+                        <button class="sub-btn" id="sub-btn-list" onclick="switchStudyMode('list')">📋 Komplett oversikt (18)</button>
+                    </div>
+
+                    <div class="progress-pill">
+                        <span>🏆 Du kan:</span>
+                        <span id="mastered-counter">0 / 18 omgrep</span>
+                    </div>
+                </div>
+
+                <!-- MODUS A: VENDEKORT -->
+                <div id="study-cards-view" class="flashcard-area">
+                    <div style="display:flex; justify-content:space-between; width:100%; max-width:680px; font-size:0.84rem; color:var(--text-muted);">
+                        <span id="fc-index-label">Kort 1 av 18</span>
+                        <label style="cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                            <input type="checkbox" id="fc-only-unmastered" onchange="filterFlashcards()">
+                            Berre øv på dei eg ikkje kan enno
+                        </label>
+                    </div>
+
+                    <div class="flashcard-scene" onclick="flipCard()">
+                        <div id="flashcard-inner" class="flashcard-inner">
+                            <!-- Framside -->
+                            <div class="flashcard-face">
+                                <span id="fc-cat-front" class="cat-tag">Kategori</span>
+                                <div id="fc-term-front" class="fc-term">Fotosyntese</div>
+                                <div class="fc-hint">👆 Klikk på kortet for å snu og sjå forklaringa</div>
+                            </div>
+                            <!-- Bakside -->
+                            <div class="flashcard-face flashcard-back">
+                                <span id="fc-cat-back" class="cat-tag">Forklaring</span>
+                                <div id="fc-def-back" class="fc-def">Forklaring kjem her...</div>
+                                <div class="fc-hint">👆 Klikk igjen for å snu tilbake</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fc-controls">
+                        <button class="btn btn-ghost" onclick="prevCard()">⬅️ Førre</button>
+                        <button class="btn btn-amber" onclick="markCard(false)">🔁 Øv meir</button>
+                        <button class="btn btn-emerald" onclick="markCard(true)">✅ Kan det!</button>
+                        <button class="btn btn-ghost" onclick="nextCard()">Neste ➡️</button>
+                    </div>
+                </div>
+
+                <!-- MODUS B: QUIZ -->
+                <div id="study-quiz-view" class="quiz-box" style="display:none;">
+                    <div id="quiz-active-area">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quiz-progress-txt">Spørsmål 1 av 18</span>
+                            <span id="quiz-score-txt" style="color:#6ee7b7; font-weight:700;">Poeng: 0</span>
+                        </div>
+
+                        <div id="quiz-q-text" class="quiz-question">Kva fagomgrep passar til denne forklaringa?</div>
+                        <div id="quiz-options-list" class="quiz-options"></div>
+
+                        <div id="quiz-feedback" style="margin-top:1rem; padding:0.85rem; border-radius:10px; display:none; font-size:0.9rem;"></div>
+
+                        <div style="margin-top:1.15rem; display:flex; justify-content:flex-end;">
+                            <button id="quiz-next-btn" class="btn btn-primary" style="display:none;" onclick="nextQuizQuestion()">Neste spørsmål ➡️</button>
+                        </div>
+                    </div>
+
+                    <div id="quiz-result-area" style="display:none; text-align:center; padding:1.5rem 0;">
+                        <div style="font-size:3rem; margin-bottom:0.5rem;">🎉</div>
+                        <h3 id="quiz-final-title" style="font-size:1.35rem; font-weight:800;">Quizen er fullført!</h3>
+                        <p id="quiz-final-sub" style="color:var(--text-muted); margin:0.5rem 0 1.25rem;"></p>
+                        <div style="display:flex; justify-content:center; gap:0.75rem; flex-wrap:wrap;">
+                            <button class="btn btn-primary" onclick="startQuiz(false)">🔄 Ta heile quizen på nytt (18)</button>
+                            <button id="quiz-retry-wrong-btn" class="btn btn-amber" style="display:none;" onclick="startQuiz(true)">🔁 Øv berre på feil svar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODUS C: KOMPLETT OVERSIKTSLISTE -->
+                <div id="study-list-view" style="display:none;">
+                    <div class="filter-bar">
+                        <input type="text" id="glossary-search" class="search-input" placeholder="🔍 Søk etter fagomgrep eller stikkord (t.d. alkan, pH, CO₂)..." oninput="renderGlossary()">
+                        <select id="glossary-cat-filter" class="cat-select" onchange="renderGlossary()">
+                            <option value="ALL">Alle kategoriar (18)</option>
+                            <option value="Biologi & krinsløp">Biologi & krinsløp</option>
+                            <option value="Energi & klima">Energi & klima</option>
+                            <option value="Kjemiske bindingar">Kjemiske bindingar</option>
+                            <option value="Organisk kjemi">Organisk kjemi</option>
+                            <option value="Syrer & havkjemi">Syrer & havkjemi</option>
+                        </select>
+                    </div>
+                    <div id="glossary-grid" class="glossary-grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             FANE 3: FUN FACTS FRÅ KARBONKJEMIEN
+             ========================================================= -->
+        <section id="panel-facts" class="tab-panel">
+            <div class="facts-header">
+                <div>
+                    <h2 style="font-size:1.2rem; font-weight:700;">💡 Fun facts frå karbonkjemien</h2>
+                    <p style="font-size:0.86rem; color:var(--text-muted);">Utvalde fakta frå pensum som gjer det mykje lettare å hugse fagomgrepa på prøven!</p>
+                </div>
+                <button class="btn btn-amber" onclick="highlightRandomFact()">🎲 Trekk ein tilfeldig fun fact</button>
+            </div>
+
+            <div id="facts-grid" class="facts-grid"></div>
+        </section>
+    </main>
+
+    <footer>
+        Naturfag • Karbonkjemi og karbonkrinsløpet • Laga for førebuing til prøve
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        /* =====================================================================
+           DATA: ALLE 18 FAGOMGREP MED PRESISE FORKLARINGAR PÅ NYNORSK
+           ===================================================================== */
+        const CONCEPTS = [
+            {
+                id: 1,
+                term: "Fotosyntese",
+                category: "Biologi & krinsløp",
+                definition: "Prosessen der grøne plantar brukar sollys, vatn og CO₂ til å produsere glukose (sukker) og oksygengass. Skjer i kloroplastane og flyttar karbon frå atmosfæren til biosfæren."
+            },
+            {
+                id: 2,
+                term: "Celleanding",
+                category: "Biologi & krinsløp",
+                definition: "Det motsette av fotosyntese. Cellene i plantar, dyr og nedbrytarar bryt ned glukose og oksygen for å frigjere energi (ATP), og sender CO₂ og vatn tilbake til lufta."
+            },
+            {
+                id: 3,
+                term: "Nedbryting",
+                category: "Biologi & krinsløp",
+                definition: "Når mikroorganismar (sopp og bakteriar) bryt ned daude plantar og dyr. Dette fører næringsstoff og CO₂ tilbake til karbonkrinsløpet."
+            },
+            {
+                id: 4,
+                term: "Karbonkrinsløpet",
+                category: "Biologi & krinsløp",
+                definition: "Det naturlege krinsløpet der karbonatomet vandrar mellom atmosfæren (lufta), hydrosfæren (havet), litosfæren (jorda) og biosfæren (levande organismar)."
+            },
+            {
+                id: 5,
+                term: "Fossile brensel",
+                category: "Energi & klima",
+                definition: "Energikjelder som kol, olje og naturgass. Dette er restar av plantar og dyr som har lege under høgt trykk utan oksygen i millionar av år."
+            },
+            {
+                id: 6,
+                term: "Forbrenning",
+                category: "Energi & klima",
+                definition: "Ein kjemisk reaksjon der eit brennbart stoff reagerer med oksygen og frigjer energi (varme og lys). Ved fullstendig forbrenning blir det danna CO₂ og vatn."
+            },
+            {
+                id: 7,
+                term: "Drivhusgass",
+                category: "Energi & klima",
+                definition: "Gassar i atmosfæren (som CO₂, metan, vassdamp, lystgass og ozon) som slepper solstrålane inn, men fangar opp langbølgja varmestråling frå jorda."
+            },
+            {
+                id: 8,
+                term: "Åtteregelen",
+                category: "Kjemiske bindingar",
+                definition: "Atom reagerer med kvarandre fordi dei ønskjer åtte elektron i det ytste skalet sitt for å bli kjemisk stabile (slik som edelgassane)."
+            },
+            {
+                id: 9,
+                term: "Elektronparbinding / kovalent binding",
+                category: "Kjemiske bindingar",
+                definition: "Ei kjemisk binding der to atom (typisk ikkje-metall som karbon og hydrogen) deler på eitt eller fleire elektronpar for å oppfylle åtteregelen."
+            },
+            {
+                id: 10,
+                term: "«Likt-løyser-likt» (Polare og upolare molekyl)",
+                category: "Kjemiske bindingar",
+                definition: "Ein regel for løyselegheit: Polare stoff (molekyl med ei pluss- og minusside, som vatn og små alkoholar) løyser andre polare stoff. Upolare stoff (som olje og alkan) løyser berre upolare stoff."
+            },
+            {
+                id: 11,
+                term: "Hydrokarbon (alkan, alken, alkyn)",
+                category: "Organisk kjemi",
+                definition: "Organiske molekyl bygde opp av berre karbon og hydrogen. Alkan har berre enkeltbindingar (metta), alken har minst éi dobbeltbinding (umetta), og alkyn har minst éi trippelbinding (umetta)."
+            },
+            {
+                id: 12,
+                term: "Metan",
+                category: "Organisk kjemi",
+                definition: "Det enklaste hydrokarbonet med formelen CH₄. Det er ein fargelaus, brennbar gass, hovudkomponenten i naturgass/biogass, og ein svært kraftig drivhusgass."
+            },
+            {
+                id: 13,
+                term: "Alkohol (einverdig, toverdig, fleirverdig)",
+                category: "Organisk kjemi",
+                definition: "Organiske sambindingar med éi eller fleire –OH-grupper (hydroksylgrupper) og endinga -ol. Delast inn i einverdig (1 –OH, t.d. etanol), toverdig (2 –OH, glykol) og tre-/fleirverdig (3 –OH, glyserol)."
+            },
+            {
+                id: 14,
+                term: "Karboksylsyre",
+                category: "Organisk kjemi",
+                definition: "Svake organiske syrer kjenneteikna av karboksylgruppa –COOH, som gir frå seg H⁺-ion i vatn. Døme er metansyre (maursyre) og etansyre (eddiksyre)."
+            },
+            {
+                id: 15,
+                term: "pH",
+                category: "Syrer & havkjemi",
+                definition: "Ein skala frå 0 til 14 som måler kor sur eller basisk ei løysing er (mengda H⁺-ion). pH under 7 er surt, 7 er nøytralt, og pH over 7 er basisk."
+            },
+            {
+                id: 16,
+                term: "Havforsuring",
+                category: "Syrer & havkjemi",
+                definition: "Når meir CO₂ i atmosfæren løyser seg i havvatnet og dannar karbonsyre (H₂CO₃), slik at mengda H⁺-ion aukar og pH-verdien i havet søkk."
+            },
+            {
+                id: 17,
+                term: "Kalk",
+                category: "Syrer & havkjemi",
+                definition: "Det kvardagslege namnet på kalsiumkarbonat (CaCO₃) – eit salt laga av kalsiumion og karbonation som marine dyr brukar til å byggje skal og skjelett."
+            },
+            {
+                id: 18,
+                term: "Karbonat",
+                category: "Syrer & havkjemi",
+                definition: "Eit ion med formelen CO₃²⁻. Ved havforsuring reagerer H⁺-ion med karbonationa og dannar hydrogenkarbonat (HCO₃⁻), slik at havdyra får mindre karbonat til å byggje kalkskal."
+            }
+        ];
+
+        /* =====================================================================
+           DATA: FUN FACTS FRÅ KARBONKJEMIEN
+           ===================================================================== */
+        const FUN_FACTS = [
+            {
+                icon: "🌊",
+                topic: "Fotosyntese & Havet",
+                title: "80 % av all fotosyntese skjer i havet!",
+                body: "Mange trur at regnskogen står for nesten all fotosyntese på jorda, men faktisk skjer heile 80 % av fotosyntesen i havet – utført av mikroskopiske algar og planteplankton.",
+                tip: "Prøvetips: Karbonatomet følgjer stort sett same veg i havet som på land gjennom fotosyntese og celleanding."
+            },
+            {
+                icon: "💎",
+                topic: "Reint karbon",
+                title: "Diamant og blyantbly er laga av nøyaktig det same!",
+                body: "Både den hardaste diamanten og det mjuke «blyet» i ein blyant (grafitt) består av 100 % reine karbonatom (C). Skilnaden er berre korleis atoma er bundne saman: diamant har eit sterkt 3D-gitter, medan grafitt ligg i lause flak. I 2004 klarte forskarar å skilje ut eitt enkelt flak – og kalla det grafen.",
+                tip: "Prøvetips: Grafitt leier elektrisk straum fordi elektrona kan røre seg mellom flaka, medan diamant ikkje leier straum."
+            },
+            {
+                icon: "🌡️",
+                topic: "Drivhuseffekten",
+                title: "Utan drivhuseffekten ville jorda vore ein isklump på -18 °C",
+                body: "Den naturlege drivhuseffekten er eigentleg livsviktig for oss! Utan vassdamp, CO₂, metan, lystgass og ozon i atmosfæren ville gjennomsnittstemperaturen på jorda vore rundt -18 til -19 °C i staden for behagelege +15 °C.",
+                tip: "Prøvetips: Problemet i dag er den forsterka (menneskeskapte) drivhuseffekten som forskyv strålingsbalansen."
+            },
+            {
+                icon: "🐄",
+                topic: "Metan & Klima",
+                title: "1 kg metan varmar 21 gonger meir enn 1 kg CO₂",
+                body: "Metangass (CH₄) er ein ekstremt kraftig drivhusgass – 1 kg metan har 21 gonger sterkare oppvarmingseffekt enn 1 kg CO₂! I magen til kyr og andre drøvtyggjarar lever bakteriar utan oksygen som lagar metan. Difor svarar 1 kg oksekjøt til heile 14 kg CO₂-ekvivalentar.",
+                tip: "Prøvetips: Metan blir òg kalla tørrgass (i Nordsjøen), gruvegass eller sumpgass/biogass."
+            },
+            {
+                icon: "🍌",
+                topic: "Alken (Dobbeltbinding)",
+                title: "Bananar og eple modnar kvarandre med alkengass!",
+                body: "Eple, pærer og bananar skil ut gassen eten (C₂H₄) når dei modnar. Eten er det enklaste alkenet (med dobbeltbinding mellom karbonatoma) og fungerer som eit modningshormon for frukt i nærleiken. Bananar blir hausta grøne og modna med etengass rett før dei kjem i butikken!",
+                tip: "Prøvetips: Dobbeltbindinga gjer alken mykje meir reaktive enn alkan – difor er eten òg råstoff for plast (polyeten)."
+            },
+            {
+                icon: "🧫",
+                topic: "Alkoholar & Gjæring",
+                title: "Gjærsopp tek livet av seg sjølv ved 15 % alkohol",
+                body: "Når gjærsopp et sukker utan oksygen til stades, lagar dei etanol (C₂H₅OH) og CO₂ for å få energi. Men når alkoholprosenten når om lag 15 %, blir miljøet så giftig at gjærcellene døyr. Skal ein lage sterkare sprit enn 15 %, må ein difor destillere.",
+                tip: "Prøvetips: Likninga for gjæring er C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂ + energi."
+            },
+            {
+                icon: "🏥",
+                topic: "Metanol vs. Etanol",
+                title: "Motgifta mot livsfarleg tresprit (metanol) er vanleg sprit!",
+                body: "Metanol (CH₃OH, tresprit) er livsfarleg fordi enzyma i levra bryt det ned til formaldehyd (som øydelegg synsnerva og gjer deg blind) og maursyre (som forsurar blodet). Dersom nokon drikk metanol, gir sjukehuset vanleg etanol som motgift – fordi levra heller bryt ned etanol først!",
+                tip: "Prøvetips: Både metanol og etanol er einverdige alkoholar (har éi –OH-gruppe)."
+            },
+            {
+                icon: "🐜",
+                topic: "Karboksylsyrer & Esterar",
+                title: "Maursyre svir – men blanda med alkohol luktar det ananas!",
+                body: "Maur og brennesler sprøyter ut den enklaste karboksylsyra – metansyre (maursyre, HCOOH) – for å forsvare seg. Men når ei karboksylsyre reagerer med ein alkohol, blir det danna ein ester og vatn. Esterar er stoffa som gir den søte, gode lukta til ananas, jordbær, blomar og parfyme!",
+                tip: "Prøvetips: Karboksylsyrer har alltid den funksjonelle gruppa –COOH."
+            },
+            {
+                icon: "🧬",
+                topic: "Karbonatomet",
+                title: "Over 95 % av alle kjende kjemiske stoff inneheld karbon",
+                body: "Sjølv om karbon berre er eitt av 92 naturlege grunnstoff på jorda, finst det i over 95 % av alle kjende kjemiske sambindingar (fleire titals millionar!). Årsaka er at karbon har 4 elektron i ytste skal og kan danne enkelt-, dobbelt- og trippelbindingar i lange kjeder, forgreiningar og ringar.",
+                tip: "Prøvetips: Unntaka som reknast som uorganiske er CO, CO₂, karbonsyre (H₂CO₃) og karbonat (CO₃²⁻)."
+            },
+            {
+                icon: "🐚",
+                topic: "Litosfæren & Kalk",
+                title: "Marmor og sement var ein gong levande skaldyr i havet",
+                body: "Det største karbonlageret på jorda ligg ikkje i olje og kol, men i bergartar i litosfæren (66 000–100 000 milliardar tonn). Kalkstein er bygd opp av kalsiumkarbonat (CaCO₃) frå skaldyr og korallar som døydde for millionar av år sidan. Under høgt trykk og varme blir kalkstein til marmor!",
+                tip: "Prøvetips: Sementproduksjon av kalkstein slepper ut mykje CO₂ til atmosfæren."
+            }
+        ];
+
+        /* =====================================================================
+           MELDINGSBOKS (ERSTATTAR alert())
+           ===================================================================== */
+        let toastTimer = null;
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+        }
+
+        /* =====================================================================
+           HOVUDNAVIGASJON MELLOM FANER
+           ===================================================================== */
+        function switchMainTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+            document.getElementById(`tab-btn-${tabName}`).classList.add('active');
+            document.getElementById(`panel-${tabName}`).classList.add('active');
+
+            if (tabName === 'study') {
+                updateMasteredUI();
+                renderGlossary();
+            }
+        }
+
+        /* =====================================================================
+           FANE 1: LABORATORIUM (CO2 I KALDT OG VARMT VATN)
+           ===================================================================== */
+        const labState = {
+            cold: { drops: 0, hasWater: false, seconds: 0, ph: 7.8, blowing: false },
+            warm: { drops: 0, hasWater: false, seconds: 0, ph: 7.8, blowing: false },
+            timer: null
+        };
+
+        function stepFlask(flask) {
+            const f = labState[flask];
+            if (f.drops < 8) {
+                pourBtbDrops(flask);
+            } else if (!f.hasWater) {
+                fillWater(flask);
+            } else {
+                toggleBlowCo2(flask);
+            }
+        }
+
+        function pourBtbDrops(flask) {
+            const f = labState[flask];
+            if (f.drops >= 8) return;
+
+            const dropEl = document.getElementById(`drop-${flask}`);
+            const liqEl = document.getElementById(`liq-${flask}`);
+            let count = f.drops;
+
+            const iv = setInterval(() => {
+                count++;
+                f.drops = count;
+                document.getElementById(`${flask}-drops-txt`).textContent = `BTB: ${count} / 8`;
+
+                dropEl.classList.remove('drop-active');
+                void dropEl.offsetWidth;
+                dropEl.classList.add('drop-active');
+
+                if (!f.hasWater) {
+                    const h = Math.min(10, count * 1.25);
+                    liqEl.setAttribute('y', 202 - h);
+                    liqEl.setAttribute('height', h);
+                    liqEl.setAttribute('fill', '#2563eb');
+                }
+
+                if (count >= 8) {
+                    clearInterval(iv);
+                    updateLabUI();
+                    if (labState.cold.drops === 8 && labState.warm.drops === 8) {
+                        showToast('Begge kolbene har 8 dråpar BTB! Hell no 40 ml vatn i kvar kolbe.');
+                    }
+                }
+            }, 130);
+        }
+
+        function fillWater(flask) {
+            const f = labState[flask];
+            if (f.drops < 8 || f.hasWater) return;
+
+            const streamEl = document.getElementById(`stream-${flask}`);
+            streamEl.style.height = '185px';
+
+            setTimeout(() => {
+                f.hasWater = true;
+                f.ph = 7.8; // pH over 7,6 -> BTB er blått
+                const liqEl = document.getElementById(`liq-${flask}`);
+                liqEl.setAttribute('y', '138');
+                liqEl.setAttribute('height', '64');
+                liqEl.setAttribute('fill', '#2563eb');
+
+                if (flask === 'cold') {
+                    document.getElementById('ice-cold').setAttribute('opacity', '1');
+                } else {
+                    document.getElementById('steam-warm').setAttribute('opacity', '1');
+                }
+
+                streamEl.style.height = '0';
+                updateLabUI();
+
+                if (labState.cold.hasWater && labState.warm.hasWater) {
+                    showToast('Begge kolbene er blå (pH > 7,6). Blås no CO₂ ned i vatnet med sugerør!');
+                }
+            }, 380);
+        }
+
+        function toggleBlowCo2(flask) {
+            const f = labState[flask];
+            if (!f.hasWater) return;
+
+            if (f.blowing) {
+                stopBlowing();
+                return;
+            }
+
+            stopBlowing();
+            f.blowing = true;
+            document.getElementById(`straw-${flask}`).setAttribute('opacity', '1');
+            document.getElementById(`bub-${flask}`).style.display = 'block';
+            updateLabUI();
+
+            labState.timer = setInterval(() => {
+                f.seconds = +(f.seconds + 0.2).toFixed(1);
+
+                // Kaldt vatn løyser meir CO2 og når pH 5,5 (gul, under 6)
+                // Varmt vatn løyser mindre CO2 og stoppar rundt pH 6,5 (grøn)
+                if (flask === 'cold') {
+                    f.ph = Math.max(5.5, +(f.ph - 0.11).toFixed(2));
+                } else {
+                    f.ph = Math.max(6.5, +(f.ph - 0.045).toFixed(2));
+                }
+
+                const btb = getBtbStyle(f.ph);
+                document.getElementById(`liq-${flask}`).setAttribute('fill', btb.hex);
+                updateLabUI();
+
+                if (f.seconds >= 6.0) {
+                    stopBlowing();
+                    if (flask === 'cold' && labState.warm.seconds < 3.0) {
+                        showToast('Det kalde vatnet vart gult (pH 5,5)! Prøv no det varme vatnet.');
+                    } else if (labState.cold.seconds >= 3.0 && labState.warm.seconds >= 3.0) {
+                        showToast('Forsøket er fullført! Les konklusjonen nedanfor.');
+                    }
+                }
+            }, 200);
+        }
+
+        function stopBlowing() {
+            clearInterval(labState.timer);
+            labState.timer = null;
+            ['cold', 'warm'].forEach(k => {
+                labState[k].blowing = false;
+                document.getElementById(`straw-${k}`).setAttribute('opacity', '0');
+                document.getElementById(`bub-${k}`).style.display = 'none';
+            });
+            updateLabUI();
+        }
+
+        function getBtbStyle(ph) {
+            if (ph > 7.6) return { hex: '#2563eb', label: 'Blå (Basisk, pH > 7,6)' };
+            if (ph > 7.0) return { hex: '#0d9488', label: 'Blågrøn (pH 7,0–7,6)' };
+            if (ph >= 6.0) return { hex: '#22c55e', label: 'Grøn (pH 6,0–7,0)' };
+            return { hex: '#facc15', label: 'Gul (Surt, pH < 6,0)' };
+        }
+
+        function updateLabUI() {
+            ['cold', 'warm'].forEach(flask => {
+                const f = labState[flask];
+                const btn = document.getElementById(`btn-${flask}`);
+                const box = document.getElementById(`box-${flask}`);
+                const colorTxt = document.getElementById(`${flask}-color-txt`);
+                const phTxt = document.getElementById(`${flask}-ph-txt`);
+                const secTxt = document.getElementById(`${flask}-sec-txt`);
+
+                secTxt.textContent = `${f.seconds.toFixed(1).replace('.', ',')} sek`;
+                box.classList.remove('target-glow');
+
+                if (f.hasWater) {
+                    const style = getBtbStyle(f.ph);
+                    colorTxt.textContent = style.label;
+                    phTxt.textContent = f.ph.toFixed(1).replace('.', ',');
+                } else {
+                    colorTxt.textContent = f.drops > 0 ? '8 dråpar BTB i botnen' : 'Tom kolbe';
+                    phTxt.textContent = '–';
+                }
+
+                if (f.drops < 8) {
+                    btn.className = 'btn btn-primary';
+                    btn.textContent = `💧 Dryp 8 dråpar BTB (${f.drops}/8)`;
+                    btn.disabled = false;
+                    box.classList.add('target-glow');
+                } else if (!f.hasWater) {
+                    btn.className = 'btn btn-primary';
+                    btn.textContent = flask === 'cold' ? '🧊 Hell i 40 ml kaldt vatn' : '🔥 Hell i 40 ml varmt vatn';
+                    btn.disabled = false;
+                    box.classList.add('target-glow');
+                } else {
+                    btn.className = flask === 'cold' ? 'btn btn-primary' : 'btn btn-rose';
+                    if (f.blowing) {
+                        btn.textContent = '⏹️ Stopp blåsing';
+                        btn.disabled = false;
+                    } else if (f.seconds >= 6.0) {
+                        btn.textContent = '✅ Ferdig testa (6,0 sek)';
+                        btn.disabled = true;
+                    } else {
+                        btn.textContent = f.seconds > 0 ? '💨 Blås meir CO₂' : '💨 Blås CO₂ med sugerør';
+                        btn.disabled = false;
+                        box.classList.add('target-glow');
+                    }
+                }
+            });
+
+            const s1 = document.getElementById('step-1');
+            const s2 = document.getElementById('step-2');
+            const s3 = document.getElementById('step-3');
+            const s4 = document.getElementById('step-4');
+            const instr = document.getElementById('lab-instruction');
+            const concl = document.getElementById('lab-conclusion');
+
+            [s1, s2, s3, s4].forEach(s => s.classList.remove('active', 'done'));
+
+            const d1 = labState.cold.drops === 8 && labState.warm.drops === 8;
+            const d2 = labState.cold.hasWater && labState.warm.hasWater;
+            const d3 = labState.cold.seconds >= 3.0 && labState.warm.seconds >= 3.0;
+
+            if (!d1) {
+                s1.classList.add('active');
+                instr.innerHTML = '<strong>Steg 1:</strong> Klikk på kvar kolbe (eller knappen under) for å dryppe <strong>8 dråpar BTB</strong> ned i botnen av begge kolbene.';
+                concl.classList.remove('show');
+            } else if (!d2) {
+                s1.classList.add('done');
+                s2.classList.add('active');
+                instr.innerHTML = '<strong>Steg 2:</strong> Hell <strong>40 ml kaldt vatn</strong> (med isbitar) i den venstre kolba og <strong>40 ml varmt vatn</strong> i den høgre kolba.';
+                concl.classList.remove('show');
+            } else if (!d3) {
+                s1.classList.add('done');
+                s2.classList.add('done');
+                s3.classList.add('active');
+                instr.innerHTML = '<strong>Steg 3:</strong> Klikk <em>«Blås CO₂ med sugerør»</em> på <strong>begge</strong> kolbene og følg med på fargeendringa og pH-verdien!';
+                concl.classList.remove('show');
+            } else {
+                s1.classList.add('done');
+                s2.classList.add('done');
+                s3.classList.add('done');
+                s4.classList.add('done');
+                instr.innerHTML = '<strong>Steg 4:</strong> Flott jobba! Samanlikn resultata i de to kolbene og les konklusjonen nedanfor.';
+                concl.classList.add('show');
+            }
+        }
+
+        function resetLab() {
+            stopBlowing();
+            labState.cold = { drops: 0, hasWater: false, seconds: 0, ph: 7.8, blowing: false };
+            labState.warm = { drops: 0, hasWater: false, seconds: 0, ph: 7.8, blowing: false };
+
+            ['cold', 'warm'].forEach(k => {
+                document.getElementById(`${k}-drops-txt`).textContent = 'BTB: 0 / 8';
+                const liq = document.getElementById(`liq-${k}`);
+                liq.setAttribute('y', '202');
+                liq.setAttribute('height', '0');
+                liq.setAttribute('fill', '#2563eb');
+            });
+
+            document.getElementById('ice-cold').setAttribute('opacity', '0');
+            document.getElementById('steam-warm').setAttribute('opacity', '0');
+            updateLabUI();
+            showToast('Laboratoriet er nullstilt!');
+        }
+
+        /* =====================================================================
+           FANE 2: ØV PÅ FAGOMGREP (VENDEKORT, QUIZ, OVERSIKT)
+           ===================================================================== */
+        const masteredIds = new Set();
+        let fcDeck = [...CONCEPTS];
+        let fcIndex = 0;
+
+        function updateMasteredUI() {
+            document.getElementById('mastered-counter').textContent = `${masteredIds.size} / ${CONCEPTS.length} omgrep`;
+        }
+
+        function switchStudyMode(mode) {
+            document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`sub-btn-${mode}`).classList.add('active');
+
+            document.getElementById('study-cards-view').style.display = mode === 'cards' ? 'flex' : 'none';
+            document.getElementById('study-quiz-view').style.display = mode === 'quiz' ? 'block' : 'none';
+            document.getElementById('study-list-view').style.display = mode === 'list' ? 'block' : 'none';
+
+            if (mode === 'cards') renderFlashcard();
+            if (mode === 'quiz') startQuiz(false);
+            if (mode === 'list') renderGlossary();
+        }
+
+        /* --- A) Vendekort --- */
+        function filterFlashcards() {
+            const onlyUnmastered = document.getElementById('fc-only-unmastered').checked;
+            if (onlyUnmastered) {
+                const remaining = CONCEPTS.filter(c => !masteredIds.has(c.id));
+                fcDeck = remaining.length > 0 ? remaining : [...CONCEPTS];
+                if (remaining.length === 0) {
+                    showToast('Du har markert alle 18 omgrepa som «Kan det!» – viser alle kort.');
+                    document.getElementById('fc-only-unmastered').checked = false;
+                }
+            } else {
+                fcDeck = [...CONCEPTS];
+            }
+            fcIndex = 0;
+            renderFlashcard();
+        }
+
+        function renderFlashcard() {
+            const inner = document.getElementById('flashcard-inner');
+            inner.classList.remove('is-flipped');
+
+            const card = fcDeck[fcIndex];
+            const isMastered = masteredIds.has(card.id);
+
+            document.getElementById('fc-index-label').textContent = `Kort ${fcIndex + 1} av ${fcDeck.length}`;
+            document.getElementById('fc-cat-front').textContent = `${card.category}${isMastered ? ' • ✅ Kan det' : ''}`;
+            document.getElementById('fc-term-front').textContent = card.term;
+            document.getElementById('fc-cat-back').textContent = card.term;
+            document.getElementById('fc-def-back').textContent = card.definition;
+        }
+
+        function flipCard() {
+            document.getElementById('flashcard-inner').classList.toggle('is-flipped');
+        }
+
+        function nextCard() {
+            fcIndex = (fcIndex + 1) % fcDeck.length;
+            renderFlashcard();
+        }
+
+        function prevCard() {
+            fcIndex = (fcIndex - 1 + fcDeck.length) % fcDeck.length;
+            renderFlashcard();
+        }
+
+        function markCard(canIt) {
+            const card = fcDeck[fcIndex];
+            if (canIt) {
+                masteredIds.add(card.id);
+                showToast(`Flott! «${card.term}» er markert som lært.`);
+            } else {
+                masteredIds.delete(card.id);
+                showToast(`«${card.term}» ligg att til meir øving.`);
+            }
+            updateMasteredUI();
+
+            if (document.getElementById('fc-only-unmastered').checked) {
+                filterFlashcards();
+            } else {
+                nextCard();
+            }
+        }
+
+        /* --- B) Quiz / Flerval --- */
+        let quizQueue = [];
+        let quizWrongIds = [];
+        let quizPos = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        function shuffleArray(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        function startQuiz(onlyWrong) {
+            if (onlyWrong && quizWrongIds.length > 0) {
+                quizQueue = shuffleArray(CONCEPTS.filter(c => quizWrongIds.includes(c.id)));
+            } else {
+                quizQueue = shuffleArray(CONCEPTS);
+            }
+            quizWrongIds = [];
+            quizPos = 0;
+            quizScore = 0;
+
+            document.getElementById('quiz-active-area').style.display = 'block';
+            document.getElementById('quiz-result-area').style.display = 'none';
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            quizAnswered = false;
+            const current = quizQueue[quizPos];
+
+            document.getElementById('quiz-progress-txt').textContent = `Spørsmål ${quizPos + 1} av ${quizQueue.length}`;
+            document.getElementById('quiz-score-txt').textContent = `Poeng: ${quizScore}`;
+            document.getElementById('quiz-q-text').textContent = `Kva fagomgrep passar til denne forklaringa?\n«${current.definition}»`;
+
+            const fb = document.getElementById('quiz-feedback');
+            fb.style.display = 'none';
+            document.getElementById('quiz-next-btn').style.display = 'none';
+
+            // Lag 3 distraktorar + rett svar
+            const distractors = shuffleArray(CONCEPTS.filter(c => c.id !== current.id)).slice(0, 3);
+            const options = shuffleArray([current, ...distractors]);
+            const letters = ['A', 'B', 'C', 'D'];
+
+            const listEl = document.getElementById('quiz-options-list');
+            listEl.innerHTML = '';
+
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-opt';
+                btn.innerHTML = `<span class="opt-letter">${letters[idx]}</span><span>${opt.term}</span>`;
+                btn.onclick = () => handleQuizAnswer(btn, opt.id === current.id, current);
+                listEl.appendChild(btn);
+            });
+        }
+
+        function handleQuizAnswer(clickedBtn, isCorrect, currentConcept) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+
+            const allBtns = document.querySelectorAll('#quiz-options-list .quiz-opt');
+            allBtns.forEach(b => {
+                b.disabled = true;
+                if (b.textContent.includes(currentConcept.term)) {
+                    b.classList.add('correct');
+                }
+            });
+
+            const fb = document.getElementById('quiz-feedback');
+            fb.style.display = 'block';
+
+            if (isCorrect) {
+                quizScore++;
+                masteredIds.add(currentConcept.id);
+                updateMasteredUI();
+                fb.style.background = 'rgba(16, 185, 129, 0.16)';
+                fb.style.border = '1px solid var(--emerald)';
+                fb.style.color = '#6ee7b7';
+                fb.innerHTML = `✅ <strong>Helt rett!</strong> ${currentConcept.term} (${currentConcept.category}).`;
+            } else {
+                clickedBtn.classList.add('wrong');
+                quizWrongIds.push(currentConcept.id);
+                fb.style.background = 'rgba(244, 63, 94, 0.16)';
+                fb.style.border = '1px solid var(--rose)';
+                fb.style.color = '#fda4af';
+                fb.innerHTML = `❌ <strong>Ikkje heilt.</strong> Rett svar er <strong>${currentConcept.term}</strong>.`;
+            }
+
+            document.getElementById('quiz-score-txt').textContent = `Poeng: ${quizScore}`;
+            const nextBtn = document.getElementById('quiz-next-btn');
+            nextBtn.style.display = 'inline-flex';
+            nextBtn.textContent = quizPos + 1 < quizQueue.length ? 'Neste spørsmål ➡️' : 'Sjå resultat 🏆';
+        }
+
+        function nextQuizQuestion() {
+            quizPos++;
+            if (quizPos < quizQueue.length) {
+                renderQuizQuestion();
+            } else {
+                document.getElementById('quiz-active-area').style.display = 'none';
+                document.getElementById('quiz-result-area').style.display = 'block';
+
+                const pct = Math.round((quizScore / quizQueue.length) * 100);
+                document.getElementById('quiz-final-title').textContent = `Du fekk ${quizScore} av ${quizQueue.length} rette (${pct} %)!`;
+                document.getElementById('quiz-final-sub').textContent = pct >= 80
+                    ? 'Kjempebra! Du har veldig god kontroll på fagomgrepa til prøven.'
+                    : 'God innsats! Øv gjerne ein runde til på omgrepa som var vanskelege.';
+
+                const retryBtn = document.getElementById('quiz-retry-wrong-btn');
+                retryBtn.style.display = quizWrongIds.length > 0 ? 'inline-flex' : 'none';
+            }
+        }
+
+        /* --- C) Komplett oversiktsliste --- */
+        function renderGlossary() {
+            const query = document.getElementById('glossary-search').value.toLowerCase().trim();
+            const cat = document.getElementById('glossary-cat-filter').value;
+            const grid = document.getElementById('glossary-grid');
+
+            const filtered = CONCEPTS.filter(c => {
+                const matchCat = cat === 'ALL' || c.category === cat;
+                const matchTxt = c.term.toLowerCase().includes(query) || c.definition.toLowerCase().includes(query);
+                return matchCat && matchTxt;
+            });
+
+            grid.innerHTML = '';
+            filtered.forEach(c => {
+                const isMastered = masteredIds.has(c.id);
+                const card = document.createElement('div');
+                card.className = `glossary-card ${isMastered ? 'mastered' : ''}`;
+                card.innerHTML = `
+                    <div>
+                        <div class="glossary-header">
+                            <span class="glossary-title">${c.id}. ${c.term}</span>
+                            <span class="cat-tag" style="font-size:0.68rem;">${c.category}</span>
+                        </div>
+                        <p style="font-size:0.86rem; color:#cbd5e1; margin-top:0.5rem;">${c.definition}</p>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end;">
+                        <button class="btn ${isMastered ? 'btn-emerald' : 'btn-ghost'}" style="padding:0.4rem 0.75rem; font-size:0.78rem;" onclick="toggleGlossaryMastered(${c.id})">
+                            ${isMastered ? '✅ Kan dette omgrepet' : '⬜ Marker som lært'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleGlossaryMastered(id) {
+            if (masteredIds.has(id)) {
+                masteredIds.delete(id);
+            } else {
+                masteredIds.add(id);
+            }
+            updateMasteredUI();
+            renderGlossary();
+        }
+
+        /* =====================================================================
+           FANE 3: FUN FACTS
+           ===================================================================== */
+        function renderFunFacts() {
+            const grid = document.getElementById('facts-grid');
+            grid.innerHTML = '';
+
+            FUN_FACTS.forEach((f, idx) => {
+                const card = document.createElement('article');
+                card.className = 'fact-card';
+                card.id = `fact-card-${idx}`;
+                card.innerHTML = `
+                    <div class="fact-top">
+                        <div class="fact-icon">${f.icon}</div>
+                        <span class="fact-topic">${f.topic}</span>
+                    </div>
+                    <h3 class="fact-title">${f.title}</h3>
+                    <p class="fact-body">${f.body}</p>
+                    <div class="fact-exam-tip">🎓 ${f.tip}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function highlightRandomFact() {
+            const idx = Math.floor(Math.random() * FUN_FACTS.length);
+            const target = document.getElementById(`fact-card-${idx}`);
+            if (!target) return;
+
+            document.querySelectorAll('.fact-card').forEach(c => {
+                c.style.boxShadow = '';
+                c.style.borderColor = '';
+            });
+
+            target.style.borderColor = '#38bdf8';
+            target.style.boxShadow = '0 0 0 4px rgba(56, 189, 248, 0.35)';
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            showToast(`Fun fact #${idx + 1}: ${FUN_FACTS[idx].title}`);
+        }
+
+        /* =====================================================================
+           OPPSTART
+           ===================================================================== */
+        window.onload = function() {
+            updateLabUI();
+            renderFlashcard();
+            renderGlossary();
+            renderFunFacts();
+            updateMasteredUI();
+        };
+    </script>
+</body>
+</html>
